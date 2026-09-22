@@ -32,6 +32,12 @@ export default function RootLayout({
                   Drills
                 </Link>
                 <Link
+                  href="/create"
+                  className="text-sm uppercase tracking-wider hover:text-gray-600 transition-colors"
+                >
+                  Create
+                </Link>
+                <Link
                   href="/practice-plans"
                   className="text-sm uppercase tracking-wider hover:text-gray-600 transition-colors"
                 >

@@ -1,26 +1,42 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { drills } from "@/lib/drills";
+import { useState, useMemo, useEffect } from "react";
+import { drills as seededDrills } from "@/lib/drills";
+import { Drill } from "@/types";
 import Link from "next/link";
 
 export default function DrillsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>("All");
+  const [customDrills, setCustomDrills] = useState<Drill[]>([]);
+
+  useEffect(() => {
+    // Load custom drills from localStorage
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("custom-drills");
+      if (saved) {
+        setCustomDrills(JSON.parse(saved));
+      }
+    }
+  }, []);
+
+  const allDrills = useMemo(() => {
+    return [...customDrills, ...seededDrills];
+  }, [customDrills]);
 
   const allCategories = useMemo(() => {
     const categories = new Set<string>();
-    drills.forEach((drill) => {
+    allDrills.forEach((drill) => {
       drill.categories.forEach((cat) => categories.add(cat));
     });
     return ["All", ...Array.from(categories).sort()];
-  }, []);
+  }, [allDrills]);
 
   const difficulties = ["All", "Beginner", "Intermediate", "Advanced", "Elite"];
 
   const filteredDrills = useMemo(() => {
-    return drills.filter((drill) => {
+    return allDrills.filter((drill) => {
       const matchesSearch =
         searchTerm === "" ||
         drill.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -36,18 +52,27 @@ export default function DrillsPage() {
 
       return matchesSearch && matchesCategory && matchesDifficulty;
     });
-  }, [searchTerm, selectedCategory, selectedDifficulty]);
+  }, [allDrills, searchTerm, selectedCategory, selectedDifficulty]);
 
   return (
     <div className="min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="mb-12">
-          <h1 className="text-5xl font-bold tracking-tight mb-4">
-            Drill Library
-          </h1>
-          <p className="text-gray-700 text-lg">
-            {drills.length} curated goalie drills
-          </p>
+        <div className="flex justify-between items-start mb-12">
+          <div>
+            <h1 className="text-5xl font-bold tracking-tight mb-4">
+              Drill Library
+            </h1>
+            <p className="text-gray-700 text-lg">
+              {allDrills.length} {allDrills.length === 1 ? "drill" : "drills"}
+              {customDrills.length > 0 && ` (${customDrills.length} custom)`}
+            </p>
+          </div>
+          <Link
+            href="/create"
+            className="px-8 py-4 bg-black text-white text-sm uppercase tracking-wider hover:bg-gray-800 transition-colors"
+          >
+            Create Drill
+          </Link>
         </div>
 
         <div className="mb-12 space-y-4">

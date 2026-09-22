@@ -27,10 +27,25 @@ export default async function DrillDetailPage({
 
         <div className="mb-8">
           <div className="flex items-start justify-between mb-6">
-            <h1 className="text-5xl font-bold tracking-tight">{drill.name}</h1>
-            <span className="text-lg border border-black px-4 py-2">
-              {drill.duration} min
-            </span>
+            <div className="flex-1">
+              <h1 className="text-5xl font-bold tracking-tight">
+                {drill.name}
+                {drill.id.startsWith("custom-") && (
+                  <span className="ml-4 text-xl border-2 border-black px-3 py-1">CUSTOM</span>
+                )}
+              </h1>
+            </div>
+            <div className="flex items-center space-x-4">
+              <span className="text-lg border border-black px-4 py-2">
+                {drill.duration} min
+              </span>
+              <Link
+                href={`/create/${drill.id}`}
+                className="px-6 py-3 border-2 border-black text-sm uppercase tracking-wider hover:bg-black hover:text-white transition-colors"
+              >
+                Edit
+              </Link>
+            </div>
           </div>
 
           <div className="flex flex-wrap gap-2 mb-6">
@@ -55,12 +70,6 @@ export default async function DrillDetailPage({
         <div className="mb-12">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-2xl font-bold uppercase tracking-wider">Drill Setup</h2>
-            <Link
-              href={`/editor/${drill.id}`}
-              className="px-4 py-2 border border-black text-sm uppercase tracking-wider hover:bg-black hover:text-white transition-colors"
-            >
-              Edit Diagram
-            </Link>
           </div>
           <DiagramDisplay diagram={drill.diagram} drillId={drill.id} />
         </div>
