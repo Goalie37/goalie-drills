@@ -1,3 +1,28 @@
+export type DiagramElementType =
+  | "goalie"
+  | "cone"
+  | "shooter"
+  | "puck"
+  | "path"
+  | "arrow"
+  | "label"
+  | "screen";
+
+export interface DiagramElement {
+  type: DiagramElementType;
+  x?: number;
+  y?: number;
+  rotation?: number;
+  label?: string;
+  pathPoints?: { x: number; y: number }[];
+  size?: number;
+}
+
+export interface CreaseDiagram {
+  elements: DiagramElement[];
+  notes?: string;
+}
+
 export interface Drill {
   id: string;
   name: string;
@@ -7,6 +32,7 @@ export interface Drill {
   duration: number;
   equipment: string[];
   coachingCues: string[];
+  diagram: CreaseDiagram;
 }
 
 export interface PracticePlan {

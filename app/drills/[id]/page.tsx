@@ -1,6 +1,7 @@
 import { drills } from "@/lib/drills";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import CreaseDiagram from "@/components/CreaseDiagram";
 
 export default async function DrillDetailPage({
   params,
@@ -48,6 +49,12 @@ export default async function DrillDetailPage({
               {drill.difficulty}
             </span>
           </div>
+        </div>
+
+        {/* Crease Diagram - Hero Section */}
+        <div className="mb-12">
+          <h2 className="text-2xl font-bold mb-4 uppercase tracking-wider">Drill Setup</h2>
+          <CreaseDiagram diagram={drill.diagram} width={600} height={450} />
         </div>
 
         <div className="border-t border-black pt-8 space-y-12">
