@@ -1,25 +1,36 @@
+export type DiagramCanvasType = "in-zone" | "crease" | "dual";
+
 export type DiagramElementType =
   | "goalie"
-  | "cone"
   | "shooter"
+  | "cone"
   | "puck"
-  | "path"
-  | "arrow"
-  | "label"
-  | "screen";
+  | "screen"
+  | "label";
+
+export type PathType = "solid" | "wavy" | "dashed";
+export type PathColor = "black" | "green" | "orange";
+
+export interface DiagramPath {
+  type: PathType;
+  points: { x: number; y: number }[];
+  color?: PathColor;
+  hasArrow?: boolean;
+}
 
 export interface DiagramElement {
+  id: string;
   type: DiagramElementType;
-  x?: number;
-  y?: number;
-  rotation?: number;
+  x: number;
+  y: number;
   label?: string;
-  pathPoints?: { x: number; y: number }[];
-  size?: number;
+  canvas?: "left" | "right"; // For dual canvas
 }
 
 export interface CreaseDiagram {
+  canvasType: DiagramCanvasType;
   elements: DiagramElement[];
+  paths: DiagramPath[];
   notes?: string;
 }
 

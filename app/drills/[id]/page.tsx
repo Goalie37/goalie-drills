@@ -1,7 +1,7 @@
 import { drills } from "@/lib/drills";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import CreaseDiagram from "@/components/CreaseDiagram";
+import DiagramDisplay from "@/components/DiagramDisplay";
 
 export default async function DrillDetailPage({
   params,
@@ -17,7 +17,7 @@ export default async function DrillDetailPage({
 
   return (
     <div className="min-h-screen">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <Link
           href="/drills"
           className="inline-block text-sm uppercase tracking-wider mb-8 hover:text-gray-600 transition-colors"
@@ -51,10 +51,18 @@ export default async function DrillDetailPage({
           </div>
         </div>
 
-        {/* Crease Diagram - Hero Section */}
+        {/* Drill Diagram */}
         <div className="mb-12">
-          <h2 className="text-2xl font-bold mb-4 uppercase tracking-wider">Drill Setup</h2>
-          <CreaseDiagram diagram={drill.diagram} width={600} height={450} />
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-2xl font-bold uppercase tracking-wider">Drill Setup</h2>
+            <Link
+              href={`/editor/${drill.id}`}
+              className="px-4 py-2 border border-black text-sm uppercase tracking-wider hover:bg-black hover:text-white transition-colors"
+            >
+              Edit Diagram
+            </Link>
+          </div>
+          <DiagramDisplay diagram={drill.diagram} drillId={drill.id} />
         </div>
 
         <div className="border-t border-black pt-8 space-y-12">
