@@ -2,12 +2,13 @@ import { drills } from "@/lib/drills";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-export default function DrillDetailPage({
+export default async function DrillDetailPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const drill = drills.find((d) => d.id === params.id);
+  const { id } = await params;
+  const drill = drills.find((d) => d.id === id);
 
   if (!drill) {
     notFound();
