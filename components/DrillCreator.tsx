@@ -12,7 +12,7 @@ import {
   PathType,
   PathColor,
 } from "@/types";
-import { InZoneCanvas, CreaseCanvas } from "@/components/RinkCanvas";
+import { CreaseCanvas, InZoneCanvas, RINK_VIEW } from "@/components/RinkCanvas";
 import { DiagramElements } from "@/components/DiagramElements";
 
 interface DrillCreatorProps {
@@ -138,8 +138,8 @@ export default function DrillCreator({ initialDrill }: DrillCreatorProps) {
     const rect = svg.getBoundingClientRect();
     if (rect.width === 0 || rect.height === 0) return null;
     return {
-      x: Math.min(200, Math.max(0, ((clientX - rect.left) / rect.width) * 200)),
-      y: Math.min(200, Math.max(0, ((clientY - rect.top) / rect.height) * 200)),
+      x: Math.min(RINK_VIEW.width, Math.max(0, ((clientX - rect.left) / rect.width) * RINK_VIEW.width)),
+      y: Math.min(RINK_VIEW.height, Math.max(0, ((clientY - rect.top) / rect.height) * RINK_VIEW.height)),
     };
   }, []);
 
@@ -611,9 +611,9 @@ export default function DrillCreator({ initialDrill }: DrillCreatorProps) {
             onPointerUp={finishPathDraw}
             onPointerCancel={finishPathDraw}
           >
-            <Canvas width={760} height={760}>
+            <Canvas width={760}>
               <g>
-                <rect x="0" y="0" width="200" height="200" fill="transparent" />
+                <rect x="0" y="0" width={RINK_VIEW.width} height={RINK_VIEW.height} fill="transparent" />
                 <DiagramElements
                   elements={elements}
                   paths={paths}

@@ -35,7 +35,7 @@ export default function Home() {
             <div>
               <h3 className="text-2xl font-bold mb-4">Drill Library</h3>
               <p className="text-gray-700 leading-relaxed">
-                30 curated drills covering technique, positioning, conditioning,
+                1 curated drill covering technique, positioning, conditioning,
                 and game situations.
               </p>
             </div>

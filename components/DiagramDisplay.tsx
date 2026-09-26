@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { CreaseDiagram } from "@/types";
-import { InZoneCanvas, CreaseCanvas } from "./RinkCanvas";
+import { InZoneCanvas } from "./RinkCanvas";
 import { DiagramElements } from "./DiagramElements";
 
 interface DiagramDisplayProps {
@@ -31,19 +31,9 @@ export default function DiagramDisplay({ diagram, drillId }: DiagramDisplayProps
       ? activeDiagram.elements.filter((element) => element.canvas !== "right")
       : activeDiagram.elements;
 
-  if (activeDiagram.canvasType === "crease") {
-    return (
-      <div className="border-2 border-black p-4 bg-white inline-block">
-        <CreaseCanvas width={600} height={600}>
-          <DiagramElements elements={elements} paths={activeDiagram.paths} />
-        </CreaseCanvas>
-      </div>
-    );
-  }
-
   return (
     <div className="bg-white inline-block">
-      <InZoneCanvas width={600} height={600}>
+      <InZoneCanvas width={600}>
         <DiagramElements elements={elements} paths={activeDiagram.paths} />
       </InZoneCanvas>
     </div>

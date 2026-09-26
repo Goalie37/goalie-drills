@@ -10,7 +10,7 @@ import {
   PathType,
   PathColor,
 } from "@/types";
-import { InZoneCanvas, CreaseCanvas } from "./RinkCanvas";
+import { CreaseCanvas, InZoneCanvas, RINK_VIEW } from "./RinkCanvas";
 import { DiagramElements } from "./DiagramElements";
 
 interface DiagramEditorProps {
@@ -50,10 +50,10 @@ export default function DiagramEditor({
   const [history, setHistory] = useState<{ elements: DiagramElement[]; paths: DiagramPath[] }[]>([]);
   const handleCanvasClick = useCallback(
     (e: React.MouseEvent<SVGSVGElement>) => {
-      const svg = e.currentTarget;
+      const svg = e.currentTarget.ownerSVGElement ?? e.currentTarget;
       const rect = svg.getBoundingClientRect();
-      const x = ((e.clientX - rect.left) / rect.width) * 200;
-      const y = ((e.clientY - rect.top) / rect.height) * 200;
+      const x = ((e.clientX - rect.left) / rect.width) * RINK_VIEW.width;
+      const y = ((e.clientY - rect.top) / rect.height) * RINK_VIEW.height;
 
       // Save history
       setHistory([...history, { elements, paths }]);
@@ -294,18 +294,18 @@ export default function DiagramEditor({
         {/* Canvas */}
         <div className="border-2 border-black p-6 bg-gray-50">
           {canvasType === "in-zone" && (
-            <InZoneCanvas width={800} height={800}>
+            <InZoneCanvas width={800}>
               <g onClick={handleCanvasClick as any}>
-                <rect x="0" y="0" width="200" height="200" fill="transparent" />
+                <rect x="0" y="0" width={RINK_VIEW.width} height={RINK_VIEW.height} fill="transparent" />
                 {renderCanvas()}
               </g>
             </InZoneCanvas>
           )}
 
           {canvasType === "crease" && (
-            <CreaseCanvas width={800} height={800}>
+            <CreaseCanvas width={800}>
               <g onClick={handleCanvasClick as any}>
-                <rect x="0" y="0" width="200" height="200" fill="transparent" />
+                <rect x="0" y="0" width={RINK_VIEW.width} height={RINK_VIEW.height} fill="transparent" />
                 {renderCanvas()}
               </g>
             </CreaseCanvas>

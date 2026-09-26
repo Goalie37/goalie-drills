@@ -4,7 +4,7 @@ A sleek, black-and-white directory of ice hockey goalie drills. Browse the libra
 
 ## Features
 
-- **Drill Library**: 30 curated goalie drills covering technique, positioning, conditioning, and game situations
+- **Drill Library**: 1 curated goalie drill covering technique, positioning, conditioning, and game situations
 - **Practice Plans**: Create structured practice sessions by selecting and ordering drills from the library
 - **Season Plans**: Design season-long programs with weekly themes and linked practice plans
 - **Clean Design**: Stark black-and-white UI with editorial feel and high contrast
@@ -93,7 +93,7 @@ Season plans help you map out progressive training over multiple weeks with them
   /practice-plans # Practice plan management
   /season-plans   # Season planning
 /lib              # Utilities and data
-  drills.ts       # Seed data (30 drills)
+  drills.ts       # Seed data (1 drill)
   storage.ts      # localStorage wrapper
 /types            # TypeScript interfaces
 /components       # Reusable components (future)
