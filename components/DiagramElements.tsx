@@ -8,20 +8,69 @@ interface DiagramElementsProps {
   selectedId?: string;
 }
 
+function shortenPathEnd(
+  points: { x: number; y: number }[],
+  amount: number
+): { x: number; y: number }[] {
+  if (points.length < 2 || amount <= 0) return points;
+
+  const next = points.map((point) => ({ ...point }));
+  let remaining = amount;
+
+  while (next.length > 1 && remaining > 0) {
+    const last = next[next.length - 1];
+    const prev = next[next.length - 2];
+    const dx = last.x - prev.x;
+    const dy = last.y - prev.y;
+    const dist = Math.hypot(dx, dy);
+
+    if (dist > remaining) {
+      next[next.length - 1] = {
+        x: last.x - (dx / dist) * remaining,
+        y: last.y - (dy / dist) * remaining,
+      };
+      remaining = 0;
+    } else {
+      next.pop();
+      remaining -= dist;
+    }
+  }
+
+  return next.length >= 2 ? next : points;
+}
+
+function arrowDirection(points: { x: number; y: number }[]) {
+  const tip = points[points.length - 1];
+  const minDist = 2.5;
+
+  for (let i = points.length - 2; i >= 0; i--) {
+    const dx = tip.x - points[i].x;
+    const dy = tip.y - points[i].y;
+    if (dx * dx + dy * dy >= minDist * minDist) {
+      return Math.atan2(dy, dx);
+    }
+  }
+
+  const prev = points[points.length - 2];
+  return Math.atan2(tip.y - prev.y, tip.x - prev.x);
+}
+
 export function DiagramElements({ elements, paths, onElementClick, selectedId }: DiagramElementsProps) {
   const renderPath = (path: DiagramPath, index: number) => {
     if (path.points.length < 2) return null;
 
     const color = path.color === "green" ? "#00AA00" : path.color === "orange" ? "#FFA500" : "black";
+    const arrowLength = 4.8;
+    const drawPoints = path.hasArrow ? shortenPathEnd(path.points, arrowLength - 0.4) : path.points;
     
     let pathD = "";
     
     if (path.type === "wavy") {
       // Create wavy path
-      pathD = `M ${path.points[0].x} ${path.points[0].y}`;
-      for (let i = 1; i < path.points.length; i++) {
-        const prev = path.points[i - 1];
-        const curr = path.points[i];
+      pathD = `M ${drawPoints[0].x} ${drawPoints[0].y}`;
+      for (let i = 1; i < drawPoints.length; i++) {
+        const prev = drawPoints[i - 1];
+        const curr = drawPoints[i];
         const dx = curr.x - prev.x;
         const dy = curr.y - prev.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
@@ -48,14 +97,12 @@ export function DiagramElements({ elements, paths, onElementClick, selectedId }:
       }
     } else {
       // Straight or dashed path
-      pathD = path.points.map((p, i) => `${i === 0 ? "M" : "L"} ${p.x} ${p.y}`).join(" ");
+      pathD = drawPoints.map((p, i) => `${i === 0 ? "M" : "L"} ${p.x} ${p.y}`).join(" ");
     }
 
-    const lastPoint = path.points[path.points.length - 1];
-    const secondLastPoint = path.points[path.points.length - 2];
-    const angle = secondLastPoint
-      ? Math.atan2(lastPoint.y - secondLastPoint.y, lastPoint.x - secondLastPoint.x)
-      : 0;
+    const tip = path.points[path.points.length - 1];
+    const angle = arrowDirection(path.points);
+    const wing = (Math.PI * 22) / 180;
 
     return (
       <g key={`path-${index}`}>
@@ -64,15 +111,17 @@ export function DiagramElements({ elements, paths, onElementClick, selectedId }:
           fill="none"
           stroke={color}
           strokeWidth="2"
+          strokeLinecap="butt"
+          strokeLinejoin="round"
           strokeDasharray={path.type === "dashed" ? "4,3" : "0"}
         />
         {path.hasArrow && (
           <polygon
-            points={`
-              ${lastPoint.x},${lastPoint.y}
-              ${lastPoint.x - 6 * Math.cos(angle - Math.PI / 6)},${lastPoint.y - 6 * Math.sin(angle - Math.PI / 6)}
-              ${lastPoint.x - 6 * Math.cos(angle + Math.PI / 6)},${lastPoint.y - 6 * Math.sin(angle + Math.PI / 6)}
-            `}
+            points={`${tip.x},${tip.y} ${
+              tip.x - arrowLength * Math.cos(angle - wing)
+            },${tip.y - arrowLength * Math.sin(angle - wing)} ${
+              tip.x - arrowLength * Math.cos(angle + wing)
+            },${tip.y - arrowLength * Math.sin(angle + wing)}`}
             fill={color}
           />
         )}

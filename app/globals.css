@@ -5,4 +5,8 @@
     background-color: white;
     color: black;
   }
+
+  body:has([data-editor]) footer {
+    display: none;
+  }
 }

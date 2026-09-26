@@ -10,7 +10,7 @@ import {
   PathType,
   PathColor,
 } from "@/types";
-import { InZoneCanvas, CreaseCanvas, DualCanvas } from "./RinkCanvas";
+import { InZoneCanvas, CreaseCanvas } from "./RinkCanvas";
 import { DiagramElements } from "./DiagramElements";
 
 interface DiagramEditorProps {
@@ -48,10 +48,8 @@ export default function DiagramEditor({
   const [currentPath, setCurrentPath] = useState<DiagramPath | null>(null);
   const [pathColor, setPathColor] = useState<PathColor>("black");
   const [history, setHistory] = useState<{ elements: DiagramElement[]; paths: DiagramPath[] }[]>([]);
-  const [activeCanvas, setActiveCanvas] = useState<"left" | "right" | undefined>(undefined);
-
   const handleCanvasClick = useCallback(
-    (e: React.MouseEvent<SVGSVGElement>, canvas?: "left" | "right") => {
+    (e: React.MouseEvent<SVGSVGElement>) => {
       const svg = e.currentTarget;
       const rect = svg.getBoundingClientRect();
       const x = ((e.clientX - rect.left) / rect.width) * 200;
@@ -87,12 +85,11 @@ export default function DiagramEditor({
           x,
           y,
           label: selectedTool === "goalie" ? "G" : undefined,
-          canvas: canvasType === "dual" ? canvas : undefined,
         };
         setElements([...elements, newElement]);
       }
     },
-    [selectedTool, currentPath, pathColor, elements, paths, history, canvasType]
+    [selectedTool, currentPath, pathColor, elements, paths, history]
   );
 
   const finishPath = useCallback(() => {
@@ -134,20 +131,12 @@ export default function DiagramEditor({
     });
   }, [canvasType, elements, paths, initialDiagram.notes, onSave]);
 
-  const renderCanvas = (canvas?: "left" | "right") => {
-    const canvasElements = canvasType === "dual"
-      ? elements.filter((e) => e.canvas === canvas)
-      : elements;
-
-    const handleClick = (e: React.MouseEvent<SVGSVGElement>) => {
-      handleCanvasClick(e, canvas);
-    };
-
+  const renderCanvas = () => {
     return (
       <>
         <DiagramElements
-          elements={canvasElements}
-          paths={canvasType === "dual" && canvas === "right" ? [] : paths}
+          elements={elements}
+          paths={paths}
           onElementClick={handleElementClick}
           selectedId={selectedId}
         />
@@ -199,7 +188,7 @@ export default function DiagramEditor({
               Canvas Type
             </label>
             <div className="flex space-x-2">
-              {(["in-zone", "crease", "dual"] as DiagramCanvasType[]).map((type) => (
+              {(["in-zone", "crease"] as DiagramCanvasType[]).map((type) => (
                 <button
                   key={type}
                   onClick={() => setCanvasType(type)}
@@ -321,33 +310,6 @@ export default function DiagramEditor({
               </g>
             </CreaseCanvas>
           )}
-
-          {canvasType === "dual" && (
-            <div className="flex gap-4">
-              <div className="flex-1">
-                <div className="text-sm uppercase tracking-wider mb-2 font-bold">
-                  In-Zone View
-                </div>
-                <InZoneCanvas width={450} height={450}>
-                  <g onClick={(e) => handleCanvasClick(e as any, "left")}>
-                    <rect x="0" y="0" width="200" height="200" fill="transparent" />
-                    {renderCanvas("left")}
-                  </g>
-                </InZoneCanvas>
-              </div>
-              <div className="flex-1">
-                <div className="text-sm uppercase tracking-wider mb-2 font-bold">
-                  Crease Detail
-                </div>
-                <CreaseCanvas width={450} height={450}>
-                  <g onClick={(e) => handleCanvasClick(e as any, "right")}>
-                    <rect x="0" y="0" width="200" height="200" fill="transparent" />
-                    {renderCanvas("right")}
-                  </g>
-                </CreaseCanvas>
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Instructions */}
@@ -357,7 +319,6 @@ export default function DiagramEditor({
             <li>Select a tool and click on the canvas to place elements</li>
             <li>For paths: click multiple points, then click "Finish Path"</li>
             <li>Use "Select" tool to click and select elements for deletion</li>
-            <li>In dual canvas mode, click the appropriate canvas to place elements</li>
           </ul>
         </div>
       </div>

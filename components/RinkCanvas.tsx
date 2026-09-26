@@ -6,79 +6,130 @@ interface RinkCanvasProps {
   children?: React.ReactNode;
 }
 
+const RED = "#E11D2E";
+const BLUE = "#2F6FED";
+
+function FaceoffCircle({ cx, cy, r }: { cx: number; cy: number; r: number }) {
+  const arm = r * 0.2;
+  const hashX = r * 0.2;
+  const hashGap = r * 0.055;
+  const hashH = r * 0.16;
+
+  return (
+    <g stroke={RED} strokeWidth="0.9" fill="none" strokeLinecap="butt">
+      <circle cx={cx} cy={cy} r={r} />
+      <circle cx={cx} cy={cy} r="0.9" fill={RED} stroke="none" />
+      <line x1={cx - arm} y1={cy} x2={cx + arm} y2={cy} />
+      <line x1={cx} y1={cy - arm} x2={cx} y2={cy + arm} />
+      <line x1={cx - hashX} y1={cy - hashH} x2={cx - hashX} y2={cy + hashH} />
+      <line x1={cx - hashX - hashGap} y1={cy - hashH} x2={cx - hashX - hashGap} y2={cy + hashH} />
+      <line x1={cx + hashX} y1={cy - hashH} x2={cx + hashX} y2={cy + hashH} />
+      <line x1={cx + hashX + hashGap} y1={cy - hashH} x2={cx + hashX + hashGap} y2={cy + hashH} />
+    </g>
+  );
+}
+
 export function InZoneCanvas({ width = 400, height = 400, children }: RinkCanvasProps) {
+  const left = 12;
+  const right = 188;
+  const top = 16;
+  const bottom = 176;
+  const corner = 26;
+  const mid = 100;
+  const blueY = 56;
+  const faceY = 120;
+  const faceX = 44;
+  const faceR = 30;
+  const goalY = 162;
+
   return (
     <svg
       width={width}
       height={height}
       viewBox="0 0 200 200"
       style={{ display: "block" }}
-      className="bg-white border-2 border-black"
+      className="bg-white"
     >
-      {/* End boards */}
+      {/* Boards: open at center ice, rounded end-board corners */}
       <path
-        d="M 10 10 Q 10 10, 10 30 L 10 170 Q 10 190, 10 190 L 190 190 Q 190 190, 190 170 L 190 30 Q 190 10, 190 10 Z"
+        d={`
+          M ${left} ${top + 1.6}
+          L ${left} ${bottom - corner}
+          Q ${left} ${bottom} ${left + corner} ${bottom}
+          L ${right - corner} ${bottom}
+          Q ${right} ${bottom} ${right} ${bottom - corner}
+          L ${right} ${top + 1.6}
+        `}
         fill="none"
-        stroke="black"
-        strokeWidth="2"
+        stroke={BLUE}
+        strokeWidth="1.65"
+        strokeLinecap="butt"
+        strokeLinejoin="round"
       />
-      
-      {/* Rounded corners */}
+
+      {/* Center line — solid ends so the board joints stay red, not blue */}
+      <line x1={left - 0.2} y1={top} x2={left + 4} y2={top} stroke={RED} strokeWidth="1.2" />
+      <line
+        x1={left + 3}
+        y1={top}
+        x2={right - 3}
+        y2={top}
+        stroke={RED}
+        strokeWidth="1.1"
+        strokeDasharray="2.2 1.9"
+        strokeLinecap="round"
+      />
+      <line x1={right - 4} y1={top} x2={right + 0.2} y2={top} stroke={RED} strokeWidth="1.2" />
+
+      {/* Center-ice circle (lower half) */}
       <path
-        d="M 10 30 Q 10 10, 30 10 L 170 10 Q 190 10, 190 30"
+        d={`M ${mid - 24} ${top} A 24 24 0 0 0 ${mid + 24} ${top}`}
         fill="none"
-        stroke="black"
-        strokeWidth="2"
+        stroke={RED}
+        strokeWidth="1"
       />
-      
-      {/* Goal line (red) */}
-      <line x1="10" y1="160" x2="190" y2="160" stroke="#DC143C" strokeWidth="2" />
-      
+
+      {/* Neutral-zone faceoff dots */}
+      <circle cx={mid - faceX} cy={36} r="1.05" fill={RED} />
+      <circle cx={mid + faceX} cy={36} r="1.05" fill={RED} />
+
       {/* Blue line */}
-      <line x1="10" y1="80" x2="190" y2="80" stroke="#0047AB" strokeWidth="3" />
-      
-      {/* Center line (dashed) */}
-      <line x1="10" y1="40" x2="190" y2="40" stroke="black" strokeWidth="1" strokeDasharray="4,4" />
-      
-      {/* Crease (light blue fill) */}
-      <ellipse cx="100" cy="160" rx="18" ry="12" fill="#87CEEB" stroke="#DC143C" strokeWidth="1.5" />
+      <line
+        x1={left}
+        y1={blueY}
+        x2={right}
+        y2={blueY}
+        stroke={BLUE}
+        strokeWidth="2.5"
+        strokeLinecap="butt"
+      />
+
+      <FaceoffCircle cx={mid - faceX} cy={faceY} r={faceR} />
+      <FaceoffCircle cx={mid + faceX} cy={faceY} r={faceR} />
+
+      {/* Short goal line so crease and net read as one unit */}
+      <line
+        x1={mid - 7}
+        y1={goalY}
+        x2={mid + 7}
+        y2={goalY}
+        stroke={RED}
+        strokeWidth="1.05"
+      />
       <path
-        d="M 82 160 L 82 166 L 100 169 L 118 166 L 118 160"
+        d={`M ${mid - 7} ${goalY} C ${mid - 7} ${goalY - 8.5} ${mid + 7} ${goalY - 8.5} ${mid + 7} ${goalY}`}
         fill="none"
-        stroke="#DC143C"
-        strokeWidth="1.5"
+        stroke={RED}
+        strokeWidth="1.05"
       />
-      
-      {/* Goal (red) */}
-      <rect x="88" y="161" width="24" height="8" fill="none" stroke="#DC143C" strokeWidth="2" />
-      <line x1="88" y1="161" x2="88" y2="169" stroke="#DC143C" strokeWidth="2" />
-      <line x1="112" y1="161" x2="112" y2="169" stroke="#DC143C" strokeWidth="2" />
       <path
-        d="M 88 161 L 88 165 L 100 167 L 112 165 L 112 161"
-        fill="#DC143C"
-        opacity="0.3"
+        d={`M ${mid - 5} ${goalY} L ${mid - 5} ${goalY + 5} Q ${mid} ${goalY + 6.2} ${mid + 5} ${goalY + 5} L ${mid + 5} ${goalY}`}
+        fill="none"
+        stroke={RED}
+        strokeWidth="1.05"
+        strokeLinejoin="round"
       />
-      
-      {/* Left faceoff circle (red) */}
-      <circle cx="60" cy="120" r="15" fill="none" stroke="#DC143C" strokeWidth="1.5" />
-      <circle cx="60" cy="120" r="1" fill="#DC143C" />
-      <line x1="55" y1="120" x2="50" y2="120" stroke="#DC143C" strokeWidth="1" />
-      <line x1="65" y1="120" x2="70" y2="120" stroke="#DC143C" strokeWidth="1" />
-      <line x1="60" y1="115" x2="60" y2="110" stroke="#DC143C" strokeWidth="1" />
-      <line x1="60" y1="125" x2="60" y2="130" stroke="#DC143C" strokeWidth="1" />
-      
-      {/* Right faceoff circle (red) */}
-      <circle cx="140" cy="120" r="15" fill="none" stroke="#DC143C" strokeWidth="1.5" />
-      <circle cx="140" cy="120" r="1" fill="#DC143C" />
-      <line x1="135" y1="120" x2="130" y2="120" stroke="#DC143C" strokeWidth="1" />
-      <line x1="145" y1="120" x2="150" y2="120" stroke="#DC143C" strokeWidth="1" />
-      <line x1="140" y1="115" x2="140" y2="110" stroke="#DC143C" strokeWidth="1" />
-      <line x1="140" y1="125" x2="140" y2="130" stroke="#DC143C" strokeWidth="1" />
-      
-      {/* Hash marks near crease */}
-      <line x1="75" y1="158" x2="75" y2="162" stroke="black" strokeWidth="1" />
-      <line x1="125" y1="158" x2="125" y2="162" stroke="black" strokeWidth="1" />
-      
+
       {children}
     </svg>
   );
@@ -141,31 +192,3 @@ export function CreaseCanvas({ width = 400, height = 400, children }: RinkCanvas
   );
 }
 
-export function DualCanvas({
-  width = 800,
-  height = 400,
-  leftChildren,
-  rightChildren,
-}: {
-  width?: number;
-  height?: number;
-  leftChildren?: React.ReactNode;
-  rightChildren?: React.ReactNode;
-}) {
-  return (
-    <div className="flex gap-4 border-2 border-black p-4 bg-white">
-      <div className="flex-1">
-        <div className="text-xs uppercase tracking-wider mb-2 font-bold">In-Zone View</div>
-        <InZoneCanvas width={width / 2 - 24} height={height}>
-          {leftChildren}
-        </InZoneCanvas>
-      </div>
-      <div className="flex-1">
-        <div className="text-xs uppercase tracking-wider mb-2 font-bold">Crease Detail</div>
-        <CreaseCanvas width={width / 2 - 24} height={height}>
-          {rightChildren}
-        </CreaseCanvas>
-      </div>
-    </div>
-  );
-}

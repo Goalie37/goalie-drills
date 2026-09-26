@@ -16,30 +16,17 @@ export const drills: Drill[] = [
       "Full extension on push leg"
     ],
     diagram: {
-      canvasType: "dual",
+      canvasType: "in-zone",
       elements: [
-        { id: "g1", type: "goalie", x: 65, y: 160, label: "G", canvas: "left" },
-        { id: "c1", type: "cone", x: 65, y: 175, canvas: "left" },
-        { id: "c2", type: "cone", x: 135, y: 175, canvas: "left" },
-        { id: "g2", type: "goalie", x: 82, y: 100, label: "1", canvas: "right" },
-        { id: "g3", type: "goalie", x: 118, y: 100, label: "2", canvas: "right" },
+        { id: "g1", type: "goalie", x: 65, y: 160, label: "G" },
+        { id: "c1", type: "cone", x: 65, y: 175 },
+        { id: "c2", type: "cone", x: 135, y: 175 },
       ],
       paths: [
         {
           type: "solid",
           points: [{ x: 70, y: 160 }, { x: 130, y: 160 }],
           hasArrow: true,
-        },
-        {
-          type: "solid",
-          points: [{ x: 82, y: 100 }, { x: 118, y: 100 }],
-          hasArrow: true,
-        },
-        {
-          type: "solid",
-          points: [{ x: 118, y: 100 }, { x: 82, y: 100 }],
-          hasArrow: true,
-          color: "green"
         },
       ],
       notes: "Post-to-post butterfly pushes with recovery"
